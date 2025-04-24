@@ -19,21 +19,20 @@ export function NavMenu() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
-  const toggleSubmenu = (label: string) => {
+  const toggleSubmenu = (label: string) =>
     setOpenSubmenu((prev) => (prev === label ? null : label));
-  };
 
   const mainMenu = [
-    { icon: <Home />, label: 'Dashboard' },
+    { icon: Home, label: 'Dashboard' },
     {
-      icon: <Users />,
+      icon: Users,
       label: 'Audience',
       submenu: ['Users', 'Subscribers'],
     },
-    { icon: <FileText />, label: 'Posts' },
-    { icon: <Calendar />, label: 'Schedules' },
+    { icon: FileText, label: 'Posts' },
+    { icon: Calendar, label: 'Schedules' },
     {
-      icon: <BarChart />,
+      icon: BarChart,
       label: 'Income',
       submenu: ['Earnings', 'Funds', 'Declines', 'Payouts'],
     },
@@ -45,46 +44,59 @@ export function NavMenu() {
         isCollapsed ? 'w-16' : 'w-64'
       } flex flex-col`}
     >
-      {/* Top Profile */}
+      {/* Perfil */}
       <div className="flex items-center justify-between p-4">
-        <div
-          className={`flex items-center gap-3 ${isCollapsed ? 'hidden' : ''}`}
-        >
-          <Image
-            src="/avatar-placeholder.png"
-            alt="User Avatar"
-            width={40}
-            height={40}
-            className="rounded-full"
-          />
-          <div>
-            <p className="text-sm font-semibold">John Doe</p>
-            <p className="text-xs opacity-75">Web Developer</p>
+        {!isCollapsed && (
+          <div className="flex items-center gap-3">
+            <Image
+              src="/avatar-placeholder.png"
+              alt="Avatar"
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
+            <div>
+              <p className="text-sm font-semibold">John Doe</p>
+              <p className="text-xs text-gray-500">Web Developer</p>
+            </div>
           </div>
-        </div>
+        )}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="text-gray-500"
+          className="text-gray-500 ml-auto"
         >
           {isCollapsed ? '➡️' : '⬅️'}
         </button>
       </div>
 
-      {/* Menu Items */}
-      <nav className="flex-1 mt-4 space-y-2">
-        {mainMenu.map((item, index) => (
-          <div key={index} className="relative group">
+      {/* Menu principal */}
+      <div className="flex-1 space-y-1">
+        <p
+          className={`px-4 pt-2 pb-1 text-xs text-gray-400 ${isCollapsed ? 'hidden' : ''}`}
+        >
+          MAIN
+        </p>
+        {mainMenu.map(({ icon: Icon, label, submenu }, i) => (
+          <div key={i} className="relative group">
             <button
-              className="flex items-center w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-              onClick={() => (item.submenu ? toggleSubmenu(item.label) : null)}
+              onClick={() =>
+                submenu && (isCollapsed ? null : toggleSubmenu(label))
+              }
+              onMouseEnter={() =>
+                submenu && isCollapsed && setOpenSubmenu(label)
+              }
+              onMouseLeave={() =>
+                submenu && isCollapsed && setOpenSubmenu(null)
+              }
+              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 relative"
             >
-              <span className="mr-3">{item.icon}</span>
+              <Icon size={18} className="mr-3 shrink-0" />
               {!isCollapsed && (
                 <>
-                  {item.label}
-                  {item.submenu && (
+                  {label}
+                  {submenu && (
                     <span className="ml-auto">
-                      {openSubmenu === item.label ? (
+                      {openSubmenu === label ? (
                         <ChevronDown size={16} />
                       ) : (
                         <ChevronRight size={16} />
@@ -95,13 +107,31 @@ export function NavMenu() {
               )}
             </button>
 
-            {/* Submenu */}
-            {item.submenu && openSubmenu === item.label && !isCollapsed && (
-              <div className="ml-10 space-y-1">
-                {item.submenu.map((sub, idx) => (
+            {/* Dropdown colapsado */}
+            {isCollapsed && submenu && openSubmenu === label && (
+              <div
+                onMouseEnter={() => setOpenSubmenu(label)}
+                onMouseLeave={() => setOpenSubmenu(null)}
+                className="absolute left-full top-0 ml-2 w-40 bg-white border rounded-lg shadow-md py-2 z-50"
+              >
+                {submenu.map((sub, j) => (
+                  <div
+                    key={j}
+                    className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 cursor-pointer"
+                  >
+                    {sub}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Dropdown expandido */}
+            {!isCollapsed && submenu && openSubmenu === label && (
+              <div className="ml-12 space-y-1 pb-1 transition-all">
+                {submenu.map((sub, j) => (
                   <button
-                    key={idx}
-                    className="text-sm text-gray-600 hover:text-black"
+                    key={j}
+                    className="block w-full text-left px-4 py-1.5 text-sm text-gray-600 hover:text-black"
                   >
                     {sub}
                   </button>
@@ -110,20 +140,20 @@ export function NavMenu() {
             )}
           </div>
         ))}
-      </nav>
+      </div>
 
-      {/* Settings and Footer */}
+      {/* Settings / Help / Logout */}
       <div className="p-4 mt-auto space-y-2">
-        <button className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100">
-          <Settings className="mr-3" />
+        <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+          <Settings className="mr-3" size={18} />
           {!isCollapsed && 'Settings'}
         </button>
-        <button className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100">
-          <HelpCircle className="mr-3" />
+        <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+          <HelpCircle className="mr-3" size={18} />
           {!isCollapsed && 'Help'}
         </button>
-        <button className="flex items-center w-full px-4 py-2 text-red-500 hover:bg-red-100">
-          <LogOut className="mr-3" />
+        <button className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+          <LogOut className="mr-3" size={18} />
           {!isCollapsed && 'Logout'}
         </button>
       </div>
