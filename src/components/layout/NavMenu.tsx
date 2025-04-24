@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Home,
   Users,
@@ -14,8 +16,11 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
+import clsx from 'clsx';
 
 export function NavMenu() {
+  const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
@@ -23,18 +28,26 @@ export function NavMenu() {
     setOpenSubmenu((prev) => (prev === label ? null : label));
 
   const mainMenu = [
-    { icon: Home, label: 'Dashboard' },
+    { icon: Home, label: 'Dashboard', href: '/dashboard' },
     {
       icon: Users,
       label: 'Audience',
-      submenu: ['Users', 'Subscribers'],
+      submenu: [
+        { label: 'Users', href: '/audience/users' },
+        { label: 'Subscribers', href: '/audience/subscribers' },
+      ],
     },
-    { icon: FileText, label: 'Posts' },
-    { icon: Calendar, label: 'Schedules' },
+    { icon: FileText, label: 'Posts', href: '/posts' },
+    { icon: Calendar, label: 'Schedules', href: '/schedules' },
     {
       icon: BarChart,
       label: 'Income',
-      submenu: ['Earnings', 'Funds', 'Declines', 'Payouts'],
+      submenu: [
+        { label: 'Earnings', href: '/income/earnings' },
+        { label: 'Funds', href: '/income/funds' },
+        { label: 'Declines', href: '/income/declines' },
+        { label: 'Payouts', href: '/income/payouts' },
+      ],
     },
   ];
 
@@ -72,77 +85,108 @@ export function NavMenu() {
       {/* Menu principal */}
       <div className="flex-1 space-y-1">
         <p
-          className={`px-4 pt-2 pb-1 text-xs text-gray-400 ${isCollapsed ? 'hidden' : ''}`}
+          className={`px-4 pt-2 pb-1 text-xs text-gray-400 ${
+            isCollapsed ? 'hidden' : ''
+          }`}
         >
           MAIN
         </p>
-        {mainMenu.map(({ icon: Icon, label, submenu }, i) => (
-          <div key={i} className="relative group">
-            <button
-              onClick={() =>
-                submenu && (isCollapsed ? null : toggleSubmenu(label))
-              }
-              onMouseEnter={() =>
-                submenu && isCollapsed && setOpenSubmenu(label)
-              }
-              onMouseLeave={() =>
-                submenu && isCollapsed && setOpenSubmenu(null)
-              }
-              className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 relative"
-            >
-              <Icon size={18} className="mr-3 shrink-0" />
-              {!isCollapsed && (
-                <>
-                  {label}
-                  {submenu && (
-                    <span className="ml-auto">
-                      {openSubmenu === label ? (
-                        <ChevronDown size={16} />
-                      ) : (
-                        <ChevronRight size={16} />
-                      )}
-                    </span>
-                  )}
-                </>
-              )}
-            </button>
-
-            {/* Dropdown colapsado */}
-            {isCollapsed && submenu && openSubmenu === label && (
-              <div
-                onMouseEnter={() => setOpenSubmenu(label)}
-                onMouseLeave={() => setOpenSubmenu(null)}
-                className="absolute left-full top-0 ml-2 w-40 bg-white border rounded-lg shadow-md py-2 z-50"
+        {mainMenu.map(({ icon: Icon, label, href, submenu }, i) => {
+          const isActive = href
+            ? pathname === href
+            : submenu?.some((s) => pathname === s.href);
+          return (
+            <div key={i} className="relative group">
+              <button
+                onClick={() =>
+                  submenu && (isCollapsed ? null : toggleSubmenu(label))
+                }
+                onMouseEnter={() =>
+                  submenu && isCollapsed && setOpenSubmenu(label)
+                }
+                onMouseLeave={() =>
+                  submenu && isCollapsed && setOpenSubmenu(null)
+                }
+                className={clsx(
+                  'flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100',
+                  { 'bg-gray-100 font-semibold': isActive },
+                )}
               >
-                {submenu.map((sub, j) => (
-                  <div
-                    key={j}
-                    className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 cursor-pointer"
-                  >
-                    {sub}
-                  </div>
-                ))}
-              </div>
-            )}
+                <Icon size={18} className="mr-3 shrink-0" />
+                {!isCollapsed && (
+                  <>
+                    {href ? (
+                      <Link href={href} className="flex-1 text-left">
+                        {label}
+                      </Link>
+                    ) : (
+                      <span className="flex-1">{label}</span>
+                    )}
+                    {submenu && (
+                      <span className="ml-auto">
+                        {openSubmenu === label ? (
+                          <ChevronDown size={16} />
+                        ) : (
+                          <ChevronRight size={16} />
+                        )}
+                      </span>
+                    )}
+                  </>
+                )}
+              </button>
 
-            {/* Dropdown expandido */}
-            {!isCollapsed && submenu && openSubmenu === label && (
-              <div className="ml-12 space-y-1 pb-1 transition-all">
-                {submenu.map((sub, j) => (
-                  <button
-                    key={j}
-                    className="block w-full text-left px-4 py-1.5 text-sm text-gray-600 hover:text-black"
+              {/* Popover submenu colapsado */}
+              {isCollapsed && submenu && openSubmenu === label && (
+                <div
+                  onMouseEnter={() => setOpenSubmenu(label)}
+                  onMouseLeave={() => setOpenSubmenu(null)}
+                  className="absolute left-full top-0 ml-2 w-40 bg-white border rounded-lg shadow-md py-2 z-50"
+                >
+                  {submenu.map((sub, j) => (
+                    <Link
+                      key={j}
+                      href={sub.href}
+                      className={clsx(
+                        'block px-4 py-2 text-sm hover:bg-gray-100 text-gray-600',
+                        { 'font-semibold bg-gray-100': pathname === sub.href },
+                      )}
+                    >
+                      {sub.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+
+              {/* Dropdown submenu expandido com animação */}
+              <AnimatePresence>
+                {!isCollapsed && submenu && openSubmenu === label && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="ml-12 space-y-1 overflow-hidden"
                   >
-                    {sub}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+                    {submenu.map((sub, j) => (
+                      <Link
+                        key={j}
+                        href={sub.href}
+                        className={clsx(
+                          'block px-4 py-1.5 text-sm text-gray-600 hover:text-black',
+                          { 'font-semibold text-black': pathname === sub.href },
+                        )}
+                      >
+                        {sub.label}
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Settings / Help / Logout */}
+      {/* Footer */}
       <div className="p-4 mt-auto space-y-2">
         <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
           <Settings className="mr-3" size={18} />
