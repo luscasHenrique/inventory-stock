@@ -14,6 +14,7 @@ import {
   LogOut,
   ChevronDown,
   ChevronRight,
+  ChevronLeft, // ✅ Adicionado!
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -57,28 +58,33 @@ export function NavMenu() {
         isCollapsed ? 'w-16' : 'w-64'
       } flex flex-col`}
     >
-      {/* Perfil */}
-      <div className="flex items-center justify-between p-4">
-        {!isCollapsed && (
-          <div className="flex items-center gap-3">
-            <Image
-              src="/avatar-placeholder.png"
-              alt="Avatar"
-              width={40}
-              height={40}
-              className="rounded-full"
-            />
+      {/* Perfil + Botão de Collapse/Expandir */}
+      <div
+        className={`flex items-center ${
+          isCollapsed ? 'justify-center' : 'justify-between'
+        } p-4`}
+      >
+        <div className="flex items-center gap-3">
+          <Image
+            src="/avatar-placeholder.png"
+            alt="Avatar"
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
+          {!isCollapsed && (
             <div>
               <p className="text-sm font-semibold">John Doe</p>
               <p className="text-xs text-gray-500">Web Developer</p>
             </div>
-          </div>
-        )}
+          )}
+        </div>
+        {/* Sempre exibe o botão, mesmo colapsado */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="text-gray-500 ml-auto"
+          className={`text-gray-500 ${isCollapsed ? 'ml-0' : 'ml-2'}`}
         >
-          {isCollapsed ? '➡️' : '⬅️'}
+          {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
         </button>
       </div>
 
