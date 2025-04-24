@@ -3,23 +3,12 @@
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Home,
-  Users,
-  FileText,
-  Calendar,
-  BarChart,
-  Settings,
-  HelpCircle,
-  LogOut,
-  ChevronDown,
-  ChevronRight,
-  ChevronLeft,
-} from 'lucide-react';
+import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import clsx from 'clsx';
 import * as Tooltip from '@radix-ui/react-tooltip';
+import { mainMenu, footerMenu } from '@/data/menu';
 
 export function NavMenu() {
   const pathname = usePathname();
@@ -27,19 +16,13 @@ export function NavMenu() {
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
+  useEffect(() => setIsMounted(true), []);
   useEffect(() => {
     if (isMounted) {
       const savedState = localStorage.getItem('navMenuCollapsed');
-      if (savedState !== null) {
-        setIsCollapsed(savedState === 'true');
-      }
+      if (savedState !== null) setIsCollapsed(savedState === 'true');
     }
   }, [isMounted]);
-
   useEffect(() => {
     if (isMounted) {
       localStorage.setItem('navMenuCollapsed', String(isCollapsed));
@@ -49,33 +32,7 @@ export function NavMenu() {
   const toggleSubmenu = (label: string) =>
     setOpenSubmenu((prev) => (prev === label ? null : label));
 
-  const mainMenu = [
-    { icon: Home, label: 'Dashboard', href: '/dashboard' },
-    {
-      icon: Users,
-      label: 'Audience',
-      submenu: [
-        { label: 'Users', href: '/audience/users' },
-        { label: 'Subscribers', href: '/audience/subscribers' },
-      ],
-    },
-    { icon: FileText, label: 'Posts', href: '/posts' },
-    { icon: Calendar, label: 'Schedules', href: '/schedules' },
-    {
-      icon: BarChart,
-      label: 'Income',
-      submenu: [
-        { label: 'Earnings', href: '/income/earnings' },
-        { label: 'Funds', href: '/income/funds' },
-        { label: 'Declines', href: '/income/declines' },
-        { label: 'Payouts', href: '/income/payouts' },
-      ],
-    },
-  ];
-
-  if (!isMounted) {
-    return null;
-  }
+  if (!isMounted) return null;
 
   return (
     <aside
@@ -149,7 +106,9 @@ export function NavMenu() {
                 }
                 className={clsx(
                   'flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100',
-                  { 'bg-gray-100 font-semibold': isActive },
+                  {
+                    'bg-gray-100 font-semibold': isActive,
+                  },
                 )}
               >
                 <Icon size={18} className="shrink-0" />
@@ -179,7 +138,9 @@ export function NavMenu() {
                       href={sub.href}
                       className={clsx(
                         'block px-4 py-2 text-sm hover:bg-gray-100 text-gray-600',
-                        { 'font-semibold bg-gray-100': pathname === sub.href },
+                        {
+                          'font-semibold bg-gray-100': pathname === sub.href,
+                        },
                       )}
                     >
                       {sub.label}
@@ -202,7 +163,9 @@ export function NavMenu() {
                         href={sub.href}
                         className={clsx(
                           'block px-4 py-1.5 text-sm text-gray-600 hover:text-black',
-                          { 'font-semibold text-black': pathname === sub.href },
+                          {
+                            'font-semibold text-black': pathname === sub.href,
+                          },
                         )}
                       >
                         {sub.label}
@@ -216,35 +179,23 @@ export function NavMenu() {
         })}
       </div>
 
-      {/* FOOTER FIXO NO BOTTOM */}
+      {/* Footer fixo no bottom */}
       <div className="mt-auto space-y-1 py-4">
-        <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-          <Settings
-            className={clsx('size-5 shrink-0', {
-              'mx-auto': isCollapsed,
-              'mr-3': !isCollapsed,
-            })}
-          />
-          {!isCollapsed && <span>Settings</span>}
-        </button>
-        <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-          <HelpCircle
-            className={clsx('size-5 shrink-0', {
-              'mx-auto': isCollapsed,
-              'mr-3': !isCollapsed,
-            })}
-          />
-          {!isCollapsed && <span>Help</span>}
-        </button>
-        <button className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50">
-          <LogOut
-            className={clsx('size-5 shrink-0', {
-              'mx-auto': isCollapsed,
-              'mr-3': !isCollapsed,
-            })}
-          />
-          {!isCollapsed && <span>Logout</span>}
-        </button>
+        {footerMenu.map(({ icon: Icon, label, href }, idx) => (
+          <Link
+            key={idx}
+            href={href}
+            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
+            <Icon
+              className={clsx('size-5 shrink-0', {
+                'mx-auto': isCollapsed,
+                'mr-3': !isCollapsed,
+              })}
+            />
+            {!isCollapsed && <span>{label}</span>}
+          </Link>
+        ))}
       </div>
     </aside>
   );
