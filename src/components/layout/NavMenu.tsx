@@ -106,9 +106,7 @@ export function NavMenu() {
                 }
                 className={clsx(
                   'flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100',
-                  {
-                    'bg-gray-100 font-semibold': isActive,
-                  },
+                  { 'bg-gray-100 font-semibold': isActive },
                 )}
               >
                 <Icon size={18} className="shrink-0" />
@@ -138,9 +136,7 @@ export function NavMenu() {
                       href={sub.href}
                       className={clsx(
                         'block px-4 py-2 text-sm hover:bg-gray-100 text-gray-600',
-                        {
-                          'font-semibold bg-gray-100': pathname === sub.href,
-                        },
+                        { 'font-semibold bg-gray-100': pathname === sub.href },
                       )}
                     >
                       {sub.label}
@@ -163,9 +159,7 @@ export function NavMenu() {
                         href={sub.href}
                         className={clsx(
                           'block px-4 py-1.5 text-sm text-gray-600 hover:text-black',
-                          {
-                            'font-semibold text-black': pathname === sub.href,
-                          },
+                          { 'font-semibold text-black': pathname === sub.href },
                         )}
                       >
                         {sub.label}
@@ -181,11 +175,11 @@ export function NavMenu() {
 
       {/* Footer fixo no bottom */}
       <div className="mt-auto space-y-1 py-4">
-        {footerMenu.map(({ icon: Icon, label, href }, idx) => (
+        {footerMenu.map(({ icon: Icon, label, href, color }, idx) => (
           <Link
             key={idx}
             href={href}
-            className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            className={`flex items-center w-full px-4 py-2 text-sm ${color}`}
           >
             <Icon
               className={clsx('size-5 shrink-0', {
