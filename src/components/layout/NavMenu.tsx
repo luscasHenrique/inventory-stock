@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import clsx from 'clsx';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { mainMenu, footerMenu } from '@/data/menu';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
 
 export function NavMenu() {
   const pathname = usePathname();
@@ -36,7 +36,7 @@ export function NavMenu() {
 
   return (
     <aside
-      className={`h-full bg-white border-r transition-[width] duration-300 ease-in-out ${
+      className={`h-full rounded-4xl drop-shadow-lg p-1 bg-[#ffffffd2]  transition-[width] duration-300 ease-in-out ${
         isCollapsed ? 'w-16' : 'w-64'
       } flex flex-col`}
     >
@@ -47,13 +47,9 @@ export function NavMenu() {
         <Tooltip.Provider>
           <Tooltip.Root>
             <Tooltip.Trigger asChild>
-              <Image
-                src="/avatar-placeholder.png"
-                alt="Avatar"
-                width={40}
-                height={40}
-                className="rounded-full cursor-pointer"
-              />
+              <Avatar className="h-10 w-10">
+                <AvatarImage src="https://github.com/shadcn.png" />
+              </Avatar>
             </Tooltip.Trigger>
             {isCollapsed && (
               <Tooltip.Portal>
@@ -96,14 +92,14 @@ export function NavMenu() {
             : submenu?.some((s) => pathname === s.href);
 
           return (
-            <div key={i} className="relative group">
+            <div key={i} className="relative group ">
               {submenu ? (
                 <button
                   onClick={() => toggleSubmenu(label)}
                   onMouseEnter={() => isCollapsed && setOpenSubmenu(label)}
                   onMouseLeave={() => isCollapsed && setOpenSubmenu(null)}
                   className={clsx(
-                    'flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100',
+                    'flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-full',
                     { 'bg-gray-100 font-semibold': isActive },
                   )}
                 >
@@ -125,7 +121,7 @@ export function NavMenu() {
                 <Link
                   href={href!}
                   className={clsx(
-                    'flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100',
+                    'flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-full',
                     { 'bg-gray-100 font-semibold': isActive },
                   )}
                 >
@@ -186,12 +182,12 @@ export function NavMenu() {
       </div>
 
       {/* Footer fixo no bottom */}
-      <div className="mt-auto space-y-1 py-4">
+      <div className="mt-auto space-y-1 py-4  ">
         {footerMenu.map(({ icon: Icon, label, href, color }, idx) => (
           <Link
             key={idx}
             href={href}
-            className={`flex items-center w-full px-4 py-2 text-sm ${color}`}
+            className={`flex items-center w-full px-4 py-2 text-sm rounded-full ${color}`}
           >
             <Icon
               className={clsx('size-5 shrink-0', {

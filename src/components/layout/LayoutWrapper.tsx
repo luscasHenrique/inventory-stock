@@ -24,9 +24,9 @@ export default function LayoutWrapper({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-transparent ">
       {/* Desktop Sidebar */}
-      <div className="hidden md:flex">
+      <div className="hidden md:flex p-1">
         <NavMenu />
       </div>
 
