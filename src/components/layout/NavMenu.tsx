@@ -40,6 +40,7 @@ export function NavMenu() {
         isCollapsed ? 'w-16' : 'w-64'
       } flex flex-col`}
     >
+      {/* Avatar + Toggle */}
       <div
         className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'} p-4`}
       >
@@ -82,6 +83,7 @@ export function NavMenu() {
         </button>
       </div>
 
+      {/* Main Menu */}
       <div className="flex-1 space-y-1">
         <p
           className={`px-4 pt-2 pb-1 text-xs text-gray-400 ${isCollapsed ? 'hidden' : ''}`}
@@ -92,37 +94,47 @@ export function NavMenu() {
           const isActive = href
             ? pathname === href
             : submenu?.some((s) => pathname === s.href);
+
           return (
             <div key={i} className="relative group">
-              <button
-                onClick={() =>
-                  submenu && (isCollapsed ? null : toggleSubmenu(label))
-                }
-                onMouseEnter={() =>
-                  submenu && isCollapsed && setOpenSubmenu(label)
-                }
-                onMouseLeave={() =>
-                  submenu && isCollapsed && setOpenSubmenu(null)
-                }
-                className={clsx(
-                  'flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100',
-                  { 'bg-gray-100 font-semibold': isActive },
-                )}
-              >
-                <Icon size={18} className="shrink-0" />
-                {!isCollapsed && (
-                  <span className="ml-3 flex-1 text-left">{label}</span>
-                )}
-                {submenu && !isCollapsed && (
-                  <span className="ml-auto">
-                    {openSubmenu === label ? (
-                      <ChevronDown size={16} />
-                    ) : (
-                      <ChevronRight size={16} />
-                    )}
-                  </span>
-                )}
-              </button>
+              {submenu ? (
+                <button
+                  onClick={() => toggleSubmenu(label)}
+                  onMouseEnter={() => isCollapsed && setOpenSubmenu(label)}
+                  onMouseLeave={() => isCollapsed && setOpenSubmenu(null)}
+                  className={clsx(
+                    'flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100',
+                    { 'bg-gray-100 font-semibold': isActive },
+                  )}
+                >
+                  <Icon size={18} className="shrink-0" />
+                  {!isCollapsed && (
+                    <span className="ml-3 flex-1 text-left">{label}</span>
+                  )}
+                  {!isCollapsed && (
+                    <span className="ml-auto">
+                      {openSubmenu === label ? (
+                        <ChevronDown size={16} />
+                      ) : (
+                        <ChevronRight size={16} />
+                      )}
+                    </span>
+                  )}
+                </button>
+              ) : (
+                <Link
+                  href={href!}
+                  className={clsx(
+                    'flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100',
+                    { 'bg-gray-100 font-semibold': isActive },
+                  )}
+                >
+                  <Icon size={18} className="shrink-0" />
+                  {!isCollapsed && (
+                    <span className="ml-3 flex-1 text-left">{label}</span>
+                  )}
+                </Link>
+              )}
 
               {isCollapsed && submenu && openSubmenu === label && (
                 <div

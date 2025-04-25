@@ -13,8 +13,8 @@ import {
 export const mainMenu = [
   {
     icon: Home,
-    label: 'Dashboard',
-    href: '/dashboard',
+    label: 'Home',
+    href: '/',
   },
   {
     icon: Users,
