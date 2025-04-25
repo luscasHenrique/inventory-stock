@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
@@ -15,6 +15,7 @@ export function NavMenu() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const submenuTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => setIsMounted(true), []);
   useEffect(() => {
@@ -32,11 +33,22 @@ export function NavMenu() {
   const toggleSubmenu = (label: string) =>
     setOpenSubmenu((prev) => (prev === label ? null : label));
 
+  const handleMouseEnter = (label: string) => {
+    if (submenuTimeout.current) clearTimeout(submenuTimeout.current);
+    setOpenSubmenu(label);
+  };
+
+  const handleMouseLeave = () => {
+    submenuTimeout.current = setTimeout(() => {
+      setOpenSubmenu(null);
+    }, 300); // Tempo em milissegundos (300ms)
+  };
+
   if (!isMounted) return null;
 
   return (
     <aside
-      className={`h-full rounded-4xl drop-shadow-lg p-1 bg-[#ffffffd2]  transition-[width] duration-300 ease-in-out ${
+      className={`h-full rounded-4xl drop-shadow-lg p-1 bg-[#ffffffd2] transition-[width] duration-300 ease-in-out ${
         isCollapsed ? 'w-16' : 'w-64'
       } flex flex-col`}
     >
@@ -92,12 +104,12 @@ export function NavMenu() {
             : submenu?.some((s) => pathname === s.href);
 
           return (
-            <div key={i} className="relative group ">
+            <div key={i} className="relative group">
               {submenu ? (
                 <button
                   onClick={() => toggleSubmenu(label)}
-                  onMouseEnter={() => isCollapsed && setOpenSubmenu(label)}
-                  onMouseLeave={() => isCollapsed && setOpenSubmenu(null)}
+                  onMouseEnter={() => isCollapsed && handleMouseEnter(label)}
+                  onMouseLeave={() => isCollapsed && handleMouseLeave()}
                   className={clsx(
                     'flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-full',
                     { 'bg-gray-100 font-semibold': isActive },
@@ -134,8 +146,8 @@ export function NavMenu() {
 
               {isCollapsed && submenu && openSubmenu === label && (
                 <div
-                  onMouseEnter={() => setOpenSubmenu(label)}
-                  onMouseLeave={() => setOpenSubmenu(null)}
+                  onMouseEnter={() => handleMouseEnter(label)}
+                  onMouseLeave={handleMouseLeave}
                   className="absolute left-full top-0 ml-2 w-40 bg-white border rounded-lg shadow-md py-2 z-50"
                 >
                   {submenu.map((sub, j) => (
@@ -182,7 +194,7 @@ export function NavMenu() {
       </div>
 
       {/* Footer fixo no bottom */}
-      <div className="mt-auto space-y-1 py-4  ">
+      <div className="mt-auto space-y-1 py-4">
         {footerMenu.map(({ icon: Icon, label, href, color }, idx) => (
           <Link
             key={idx}

@@ -8,6 +8,7 @@ import {
   Settings,
   HelpCircle,
   LogOut,
+  ChartAreaIcon,
 } from 'lucide-react';
 
 export const mainMenu = [
@@ -15,6 +16,11 @@ export const mainMenu = [
     icon: Home,
     label: 'Home',
     href: '/',
+  },
+  {
+    icon: ChartAreaIcon,
+    label: 'Dashboard',
+    href: '/dashboard',
   },
   {
     icon: Users,
