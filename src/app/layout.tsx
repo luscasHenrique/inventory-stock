@@ -1,4 +1,5 @@
 // src/app/layout.tsx
+import { AuthProvider } from '@/context/AuthContext';
 import type { Metadata } from 'next';
 import './globals.css';
 import LayoutWrapper from '@/components/layout/LayoutWrapper';
@@ -15,10 +16,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body className="antialiased">
-        <LayoutWrapper>{children}</LayoutWrapper>
-        <AppToaster />
+        <AuthProvider>
+          <LayoutWrapper>{children}</LayoutWrapper>
+          <AppToaster />
+        </AuthProvider>
       </body>
     </html>
   );

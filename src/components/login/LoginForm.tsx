@@ -1,4 +1,3 @@
-// src/components/login/LoginForm.tsx
 'use client';
 
 import { useLogin } from './useLogin';
@@ -11,7 +10,7 @@ export function LoginForm() {
     <div className="flex min-h-screen w-full items-center justify-center">
       <form
         onSubmit={handleLogin}
-        className="bg-white p-8 rounded-lg shadow-2xl shadow-gray-400 m-2 w-full max-w-md space-y-4"
+        className="bg-white p-8 rounded-lg shadow-2xl m-2 w-full max-w-md space-y-4"
       >
         <h1 className="text-2xl font-semibold text-center">Login</h1>
 

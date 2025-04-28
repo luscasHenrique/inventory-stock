@@ -1,32 +1,49 @@
 // src/components/login/useLogin.ts
+'use client';
+
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { z } from 'zod';
 import { toast } from 'react-hot-toast';
+import { useAuth } from '@/context/AuthContext';
+import { fakeLoginRequest } from '@/lib/auth';
+import { useRouter } from 'next/navigation';
+
+// Schema de validação com Zod
+const loginSchema = z.object({
+  email: z.string().email({ message: 'E-mail inválido' }),
+  password: z
+    .string()
+    .min(6, { message: 'A senha deve ter pelo menos 6 caracteres' }),
+});
 
 export function useLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const { login } = useAuth(); // Puxa a função login do contexto
+  const router = useRouter(); // Para redirecionar
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      // Simulação de login (substitua depois pela sua API real)
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simula delay da API
+    const validation = loginSchema.safeParse({ email, password });
 
-      if (email === 'admin@example.com' && password === '123456') {
-        toast.success('Login realizado com sucesso!');
-        // Exemplo de redirecionamento após login:
-        router.push('/');
-      } else {
-        toast.error('E-mail ou senha inválidos.');
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
-      toast.error('Ocorreu um erro ao tentar logar.');
+    if (!validation.success) {
+      toast.error(validation.error.errors[0].message);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fakeLoginRequest(email, password);
+      toast.success(`Bem-vindo(a), ${response.user.name}!`);
+      login(response.token); // Salva o token no contexto
+      router.push('/'); // Redireciona para a dashboard ou página protegida
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Erro ao realizar login.';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
