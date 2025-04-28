@@ -48,9 +48,12 @@ export function NavMenu() {
 
   return (
     <aside
-      className={`h-full rounded-4xl drop-shadow-lg p-1 bg-[#ffffffd2] transition-[width] duration-300 ease-in-out ${
+      className={`h-full rounded-4xl p-1 bg-[#ffffff] transition-[width] duration-300 ease-in-out ${
         isCollapsed ? 'w-16' : 'w-64'
       } flex flex-col`}
+      style={{
+        filter: 'drop-shadow(0 4px 6px rgba(188, 188, 188, 0.573))',
+      }}
     >
       {/* Avatar + Toggle */}
       <div
