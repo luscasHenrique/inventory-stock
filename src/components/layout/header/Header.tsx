@@ -5,9 +5,18 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { mainMenu, footerMenu } from '@/data/menu';
 import { useHeader } from './useHeader';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export function Header() {
   const { isOpen, toggleMenu, closeMenu } = useHeader();
+  const { logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   return (
     <header className="w-full h-16 bg-white border-b flex items-center justify-between px-6 relative">
@@ -71,14 +80,16 @@ export function Header() {
               {/* FOOTER MENU */}
               {footerMenu.map((item) => (
                 <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={`flex items-center px-4 py-3 text-sm ${item.color}`}
-                    onClick={closeMenu}
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      closeMenu();
+                    }}
+                    className={`flex items-center w-full px-4 py-3 text-sm ${item.color}`}
                   >
                     <item.icon className="mr-3" size={18} />
                     {item.label}
-                  </Link>
+                  </button>
                 </li>
               ))}
             </ul>

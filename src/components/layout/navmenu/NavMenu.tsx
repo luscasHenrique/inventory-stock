@@ -1,6 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -9,9 +9,12 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import { mainMenu, footerMenu } from '@/data/menu';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { useNavMenu } from './useNavMenu'; // Importa o hook
+import { useAuth } from '@/context/AuthContext';
 
 export function NavMenu() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { logout } = useAuth();
   const {
     isCollapsed,
     setIsCollapsed,
@@ -20,6 +23,11 @@ export function NavMenu() {
     handleMouseEnter,
     handleMouseLeave,
   } = useNavMenu();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   return (
     <aside
@@ -173,21 +181,39 @@ export function NavMenu() {
 
       {/* Footer */}
       <div className="mt-auto space-y-1 py-4">
-        {footerMenu.map(({ icon: Icon, label, href, color }, idx) => (
-          <Link
-            key={idx}
-            href={href}
-            className={`flex items-center w-full px-4 py-2 text-sm rounded-full ${color}`}
-          >
-            <Icon
-              className={clsx('size-5 shrink-0', {
-                'mx-auto': isCollapsed,
-                'mr-3': !isCollapsed,
-              })}
-            />
-            {!isCollapsed && <span>{label}</span>}
-          </Link>
-        ))}
+        {footerMenu.map(({ icon: Icon, label, href, color }, idx) => {
+          const isLogout = label.toLowerCase() === 'logout';
+
+          return isLogout ? (
+            <button
+              key={idx}
+              onClick={handleLogout}
+              className={`flex items-center w-full px-4 py-2 text-sm rounded-full ${color}`}
+            >
+              <Icon
+                className={clsx('size-5 shrink-0', {
+                  'mx-auto': isCollapsed,
+                  'mr-3': !isCollapsed,
+                })}
+              />
+              {!isCollapsed && <span>{label}</span>}
+            </button>
+          ) : (
+            <Link
+              key={idx}
+              href={href}
+              className={`flex items-center w-full px-4 py-2 text-sm rounded-full ${color}`}
+            >
+              <Icon
+                className={clsx('size-5 shrink-0', {
+                  'mx-auto': isCollapsed,
+                  'mr-3': !isCollapsed,
+                })}
+              />
+              {!isCollapsed && <span>{label}</span>}
+            </Link>
+          );
+        })}
       </div>
     </aside>
   );

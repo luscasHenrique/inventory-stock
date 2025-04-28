@@ -8,7 +8,6 @@ import { useAuth } from '@/context/AuthContext';
 import { fakeLoginRequest } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 
-// Schema de validação com Zod
 const loginSchema = z.object({
   email: z.string().email({ message: 'E-mail inválido' }),
   password: z
@@ -20,8 +19,8 @@ export function useLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth(); // Puxa a função login do contexto
-  const router = useRouter(); // Para redirecionar
+  const { login } = useAuth();
+  const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,8 +37,8 @@ export function useLogin() {
     try {
       const response = await fakeLoginRequest(email, password);
       toast.success(`Bem-vindo(a), ${response.user.name}!`);
-      login(response.token); // Salva o token no contexto
-      router.push('/'); // Redireciona para a dashboard ou página protegida
+      login(response.token, response.user.role);
+      router.push('/'); // Redireciona após login
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Erro ao realizar login.';
