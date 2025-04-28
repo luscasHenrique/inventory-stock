@@ -7,7 +7,7 @@ import {
   useEffect,
   ReactNode,
 } from 'react';
-import { logout as logoutService } from '@/lib/auth';
+import { logout as logoutService, fetchUserInfo } from '@/lib/auth';
 import { Role } from '@/lib/auth';
 import { usePathname, useRouter } from 'next/navigation';
 import { hasAccess } from '@/lib/accessControl';
@@ -18,7 +18,7 @@ interface AuthContextProps {
   userRole: Role;
   userName: string | null;
   userEmail: string | null;
-  login: (token: string, role: Role, name: string, email: string) => void; // ✅ Aqui ajustado!
+  login: (token: string, role: Role, name: string, email: string) => void;
   logout: () => void;
   isLoading: boolean;
 }
@@ -28,26 +28,49 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<Role>('viewer');
-  const [userName, setUserName] = useState<string | null>(null); // ✅ Novo estado
-  const [userEmail, setUserEmail] = useState<string | null>(null); // ✅ Novo estado
+  const [userName, setUserName] = useState<string | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const pathname = usePathname();
   const router = useRouter();
 
-  useEffect(() => {
+  /**
+   * Carrega as informações do usuário e atualiza os estados.
+   */
+  const loadUserInfo = async () => {
     const token = localStorage.getItem('token');
-    const role = localStorage.getItem('userRole') as Role | null;
-    const name = localStorage.getItem('userName');
-    const email = localStorage.getItem('userEmail');
-
-    if (token && role && name && email) {
-      setIsLoggedIn(true);
-      setUserRole(role);
-      setUserName(name);
-      setUserEmail(email);
+    if (!token) {
+      setIsLoggedIn(false);
+      setIsLoading(false);
+      return;
     }
-    setIsLoading(false);
+
+    try {
+      const user = await fetchUserInfo();
+      setIsLoggedIn(true);
+      setUserRole(user.role);
+      setUserName(user.name);
+      setUserEmail(user.email);
+      localStorage.setItem('userRole', user.role);
+      localStorage.setItem('userName', user.name);
+      localStorage.setItem('userEmail', user.email);
+    } catch (error) {
+      console.error('Erro ao buscar dados do usuário:', error);
+      logoutService();
+      setIsLoggedIn(false);
+      setUserRole('viewer');
+      setUserName(null);
+      setUserEmail(null);
+      router.push('/login');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadUserInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -59,11 +82,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } else {
       const allowed = hasAccess(pathname, userRole);
-      if (!allowed) {
-        if (pathname !== '/') {
-          toast.error('Acesso Negado');
-          router.replace('/');
-        }
+      if (!allowed && pathname !== '/') {
+        toast.error('Acesso Negado');
+        router.replace('/');
       }
     }
   }, [isLoggedIn, userRole, pathname, router, isLoading]);

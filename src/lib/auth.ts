@@ -1,6 +1,4 @@
-// src/lib/auth.ts
-
-import { LoginResponse } from '@/types/models/user';
+import { LoginResponse, User } from '@/types/models/user';
 import { LoginRequest } from '@/types/api';
 
 export type Role = 'admin' | 'editor' | 'viewer';
@@ -38,9 +36,37 @@ export async function fakeLoginRequest(
   }
 }
 
+/**
+ * Simula a busca das informações atualizadas do usuário logado.
+ */
+export async function fetchUserInfo(): Promise<User> {
+  await new Promise((resolve) => setTimeout(resolve, 500)); // Simula delay
+
+  const email = localStorage.getItem('userEmail');
+
+  if (email === 'admin@example.com') {
+    return {
+      name: 'Administrador', // Nome atualizado simulado
+      email: 'admin@example.com',
+      role: 'admin',
+    };
+  } else if (email === 'editor@example.com') {
+    return {
+      name: 'Editor', // Nome atualizado simulado
+      email: 'editor@example.com',
+      role: 'editor',
+    };
+  } else {
+    throw new Error('Usuário não encontrado.');
+  }
+}
+
+/**
+ * Função de logout que limpa todas as informações salvas no localStorage.
+ */
 export function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('userRole');
-  localStorage.removeItem('userName'); // Adicionado para limpar o nome do usuário
-  localStorage.removeItem('userEmail'); // Adicionado para limpar o e-mail do usuário
+  localStorage.removeItem('userName');
+  localStorage.removeItem('userEmail');
 }
