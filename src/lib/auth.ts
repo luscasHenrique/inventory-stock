@@ -28,7 +28,7 @@ export async function fakeLoginRequest(
     return {
       token: 'fake-jwt-token-654321',
       user: {
-        name: 'Editor User',
+        name: 'Editor',
         email: 'editor@example.com',
         role: 'editor',
       },

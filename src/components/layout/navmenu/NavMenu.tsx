@@ -14,7 +14,7 @@ import { useAuth } from '@/context/AuthContext';
 export function NavMenu() {
   const pathname = usePathname();
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, userName, userEmail, userRole } = useAuth();
   const {
     isCollapsed,
     setIsCollapsed,
@@ -55,7 +55,11 @@ export function NavMenu() {
                   side="right"
                   className="bg-black text-white px-3 py-1 rounded text-sm"
                 >
-                  John Doe - Web Developer
+                  {userName || 'Usuário'} - {userEmail || 'Sem e-mail'}
+                  <br />
+                  <span className="text-xs text-gray-300">
+                    {userRole?.toUpperCase()}
+                  </span>
                 </Tooltip.Content>
               </Tooltip.Portal>
             )}
@@ -63,8 +67,11 @@ export function NavMenu() {
         </Tooltip.Provider>
         {!isCollapsed && (
           <div className="ml-3">
-            <p className="text-sm font-semibold">John Doe</p>
-            <p className="text-xs text-gray-500">Web Developer</p>
+            <p className="text-sm font-semibold">{userName || 'Usuário'}</p>
+            <p className="text-xs text-gray-500">{userEmail || 'Sem e-mail'}</p>
+            <p className="text-xs text-gray-400 uppercase">
+              {userRole || 'Sem role'}
+            </p>
           </div>
         )}
         <button

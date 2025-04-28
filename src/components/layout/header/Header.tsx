@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 
 export function Header() {
   const { isOpen, toggleMenu, closeMenu } = useHeader();
-  const { logout } = useAuth();
+  const { logout, userName, userEmail } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
@@ -37,6 +37,8 @@ export function Header() {
       {/* INFORMAÇÃO DE BOAS-VINDAS NO DESKTOP */}
       <div className="hidden md:flex items-center gap-4">
         <span className="text-sm text-gray-600">Bem-vindo(a)!</span>
+        <p className="text-sm font-semibold">{userName || 'Usuário'}</p>
+        <p className="text-xs text-gray-500">{userEmail || 'Sem e-mail'}</p>
       </div>
 
       {/* DROPDOWN MOBILE MENU */}
