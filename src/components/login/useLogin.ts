@@ -35,9 +35,19 @@ export function useLogin() {
     }
 
     try {
-      const response = await fakeLoginRequest(email, password);
+      // ✅ Ajustado aqui: agora passando um objeto como esperado!
+      const response = await fakeLoginRequest({ email, password });
+
       toast.success(`Bem-vindo(a), ${response.user.name}!`);
-      login(response.token, response.user.role);
+
+      // ✅ Aqui, já envia nome, e-mail e role para o contexto:
+      login(
+        response.token,
+        response.user.role,
+        response.user.name,
+        response.user.email,
+      );
+
       router.push('/'); // Redireciona após login
     } catch (error: unknown) {
       const errorMessage =

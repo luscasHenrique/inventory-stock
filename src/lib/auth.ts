@@ -1,24 +1,19 @@
 // src/lib/auth.ts
 
-export type Role = 'admin' | 'editor' | 'viewer';
+import { LoginResponse } from '@/types/models/user';
+import { LoginRequest } from '@/types/api';
 
-export interface LoginResponse {
-  token: string;
-  user: {
-    name: string;
-    email: string;
-    role: Role;
-  };
-}
+export type Role = 'admin' | 'editor' | 'viewer';
 
 /**
  * Simula uma requisição de login.
  */
 export async function fakeLoginRequest(
-  email: string,
-  password: string,
+  request: LoginRequest,
 ): Promise<LoginResponse> {
   await new Promise((resolve) => setTimeout(resolve, 1000)); // Simula delay
+
+  const { email, password } = request;
 
   if (email === 'admin@example.com' && password === '123456') {
     return {
@@ -43,10 +38,9 @@ export async function fakeLoginRequest(
   }
 }
 
-/**
- * Realiza o logout, limpando token e role do localStorage.
- */
 export function logout() {
   localStorage.removeItem('token');
   localStorage.removeItem('userRole');
+  localStorage.removeItem('userName'); // Adicionado para limpar o nome do usuário
+  localStorage.removeItem('userEmail'); // Adicionado para limpar o e-mail do usuário
 }

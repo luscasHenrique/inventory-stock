@@ -16,9 +16,11 @@ import { toast } from 'react-hot-toast';
 interface AuthContextProps {
   isLoggedIn: boolean;
   userRole: Role;
-  login: (token: string, role: Role) => void;
+  userName: string | null;
+  userEmail: string | null;
+  login: (token: string, role: Role, name: string, email: string) => void; // ✅ Aqui ajustado!
   logout: () => void;
-  isLoading: boolean; // 🚩 Aqui!
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -26,23 +28,30 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<Role>('viewer');
-  const [isLoading, setIsLoading] = useState(true); // 🚩 Inicialmente true
+  const [userName, setUserName] = useState<string | null>(null); // ✅ Novo estado
+  const [userEmail, setUserEmail] = useState<string | null>(null); // ✅ Novo estado
+  const [isLoading, setIsLoading] = useState(true);
+
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('userRole') as Role | null;
+    const name = localStorage.getItem('userName');
+    const email = localStorage.getItem('userEmail');
 
-    if (token && role) {
+    if (token && role && name && email) {
       setIsLoggedIn(true);
       setUserRole(role);
+      setUserName(name);
+      setUserEmail(email);
     }
-    setIsLoading(false); // 🔥 Só libera após checar token e role
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
-    if (isLoading) return; // 🔒 Enquanto carrega, não verifica
+    if (isLoading) return;
 
     if (!isLoggedIn) {
       if (pathname !== '/login') {
@@ -59,23 +68,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [isLoggedIn, userRole, pathname, router, isLoading]);
 
-  const login = (token: string, role: Role) => {
+  const login = (token: string, role: Role, name: string, email: string) => {
     localStorage.setItem('token', token);
     localStorage.setItem('userRole', role);
+    localStorage.setItem('userName', name);
+    localStorage.setItem('userEmail', email);
     setIsLoggedIn(true);
     setUserRole(role);
+    setUserName(name);
+    setUserEmail(email);
   };
 
   const logout = () => {
     logoutService();
     setIsLoggedIn(false);
     setUserRole('viewer');
+    setUserName(null);
+    setUserEmail(null);
     router.push('/login');
   };
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, userRole, login, logout, isLoading }}
+      value={{
+        isLoggedIn,
+        userRole,
+        userName,
+        userEmail,
+        login,
+        logout,
+        isLoading,
+      }}
     >
       {children}
     </AuthContext.Provider>
