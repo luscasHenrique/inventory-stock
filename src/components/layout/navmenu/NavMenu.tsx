@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ChevronRight, ChevronLeft } from 'lucide-react';
@@ -9,46 +8,22 @@ import clsx from 'clsx';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { mainMenu, footerMenu } from '@/data/menu';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { useNavMenu } from './useNavMenu'; // Importa o hook
 
 export function NavMenu() {
   const pathname = usePathname();
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
-  const submenuTimeout = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => setIsMounted(true), []);
-  useEffect(() => {
-    if (isMounted) {
-      const savedState = localStorage.getItem('navMenuCollapsed');
-      if (savedState !== null) setIsCollapsed(savedState === 'true');
-    }
-  }, [isMounted]);
-  useEffect(() => {
-    if (isMounted) {
-      localStorage.setItem('navMenuCollapsed', String(isCollapsed));
-    }
-  }, [isCollapsed, isMounted]);
-
-  const toggleSubmenu = (label: string) =>
-    setOpenSubmenu((prev) => (prev === label ? null : label));
-
-  const handleMouseEnter = (label: string) => {
-    if (submenuTimeout.current) clearTimeout(submenuTimeout.current);
-    setOpenSubmenu(label);
-  };
-
-  const handleMouseLeave = () => {
-    submenuTimeout.current = setTimeout(() => {
-      setOpenSubmenu(null);
-    }, 300); // Tempo em milissegundos (300ms)
-  };
-
-  if (!isMounted) return null;
+  const {
+    isCollapsed,
+    setIsCollapsed,
+    openSubmenu,
+    toggleSubmenu,
+    handleMouseEnter,
+    handleMouseLeave,
+  } = useNavMenu();
 
   return (
     <aside
-      className={`h-full rounded-4xl p-1 bg-[#ffffff] transition-[width] duration-300 ease-in-out ${
+      className={`h-full rounded-4xl p-1 bg-white transition-[width] duration-300 ease-in-out ${
         isCollapsed ? 'w-16' : 'w-64'
       } flex flex-col`}
       style={{
@@ -196,7 +171,7 @@ export function NavMenu() {
         })}
       </div>
 
-      {/* Footer fixo no bottom */}
+      {/* Footer */}
       <div className="mt-auto space-y-1 py-4">
         {footerMenu.map(({ icon: Icon, label, href, color }, idx) => (
           <Link

@@ -1,19 +1,22 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { NavMenu } from './NavMenu';
-import { Header } from './Header';
-// import { Footer } from './Footer';
+import { Header } from './header/Header';
+import { NavMenu } from './navmenu/NavMenu';
 
 const PUBLIC_ROUTES = ['/login', '/register'];
+
+function useIsPublicPage() {
+  const pathname = usePathname();
+  return PUBLIC_ROUTES.includes(pathname);
+}
 
 export default function LayoutWrapper({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-  const isPublicPage = PUBLIC_ROUTES.includes(pathname);
+  const isPublicPage = useIsPublicPage();
 
   if (isPublicPage) {
     return (
@@ -24,16 +27,14 @@ export default function LayoutWrapper({
   }
 
   return (
-    <div className="flex h-screen overflow-hidden bg-white ">
-      {/* Desktop Sidebar */}
-      <div className="hidden md:flex p-1 ">
+    <div className="flex h-screen overflow-hidden bg-white">
+      <div className="hidden md:flex p-1">
         <NavMenu />
       </div>
 
       <div className="flex-1 flex flex-col">
         <Header />
-        <main className="flex-1 overflow-auto  p-6">{children}</main>
-        {/* <Footer /> */}
+        <main className="flex-1 overflow-auto p-6">{children}</main>
       </div>
     </div>
   );

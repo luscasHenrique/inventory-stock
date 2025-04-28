@@ -2,6 +2,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import LayoutWrapper from '@/components/layout/LayoutWrapper';
+import { AppToaster } from '@/components/ui/Toaster';
 
 export const metadata: Metadata = {
   title: 'Inventory System',
@@ -17,6 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased">
         <LayoutWrapper>{children}</LayoutWrapper>
+        <AppToaster />
       </body>
     </html>
   );

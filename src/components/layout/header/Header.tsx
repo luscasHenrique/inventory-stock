@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { mainMenu, footerMenu } from '@/data/menu';
+import { useHeader } from './useHeader';
 
 export function Header() {
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, toggleMenu, closeMenu } = useHeader();
 
   return (
     <header className="w-full h-16 bg-white border-b flex items-center justify-between px-6 relative">
@@ -17,7 +17,7 @@ export function Header() {
       {/* BOTÃO DO MENU MOBILE */}
       <div className="md:hidden">
         <button
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={toggleMenu}
           aria-label="Abrir menu"
           className="text-gray-700 hover:text-black"
         >
@@ -48,7 +48,7 @@ export function Header() {
                       <Link
                         href={subItem.href}
                         className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100"
-                        onClick={() => setIsOpen(false)}
+                        onClick={closeMenu}
                       >
                         <span className="ml-3">{subItem.label}</span>
                       </Link>
@@ -59,7 +59,7 @@ export function Header() {
                     <Link
                       href={item.href}
                       className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100"
-                      onClick={() => setIsOpen(false)}
+                      onClick={closeMenu}
                     >
                       <item.icon className="mr-3" size={18} />
                       {item.label}
@@ -74,7 +74,7 @@ export function Header() {
                   <Link
                     href={item.href}
                     className={`flex items-center px-4 py-3 text-sm ${item.color}`}
-                    onClick={() => setIsOpen(false)}
+                    onClick={closeMenu}
                   >
                     <item.icon className="mr-3" size={18} />
                     {item.label}
