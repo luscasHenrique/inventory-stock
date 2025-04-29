@@ -8,17 +8,17 @@ import {
   ReactNode,
 } from 'react';
 import { logout as logoutService, fetchUserInfo } from '@/lib/auth';
-import { Role } from '@/lib/auth';
+import { UserRole } from '@/types/models/User';
 import { usePathname, useRouter } from 'next/navigation';
 import { hasAccess } from '@/lib/accessControl';
 import { toast } from 'react-hot-toast';
 
 interface AuthContextProps {
   isLoggedIn: boolean;
-  userRole: Role;
+  userRole: UserRole;
   userName: string | null;
   userEmail: string | null;
-  login: (token: string, role: Role, name: string, email: string) => void;
+  login: (token: string, role: UserRole, name: string, email: string) => void;
   logout: () => void;
   isLoading: boolean;
 }
@@ -27,7 +27,7 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userRole, setUserRole] = useState<Role>('viewer');
+  const [userRole, setUserRole] = useState<UserRole>('viewer');
   const [userName, setUserName] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,9 +35,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  /**
-   * Carrega as informações do usuário e atualiza os estados.
-   */
   const loadUserInfo = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -76,20 +73,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (isLoading) return;
 
-    if (!isLoggedIn) {
-      if (pathname !== '/login') {
-        router.replace('/login');
-      }
-    } else {
-      const allowed = hasAccess(pathname, userRole);
-      if (!allowed && pathname !== '/') {
-        toast.error('Acesso Negado');
-        router.replace('/');
-      }
+    if (!isLoggedIn && pathname !== '/login') {
+      router.replace('/login');
+    } else if (
+      isLoggedIn &&
+      !hasAccess(pathname, userRole) &&
+      pathname !== '/'
+    ) {
+      toast.error('Acesso Negado');
+      router.replace('/');
     }
   }, [isLoggedIn, userRole, pathname, router, isLoading]);
 
-  const login = (token: string, role: Role, name: string, email: string) => {
+  const login = (
+    token: string,
+    role: UserRole,
+    name: string,
+    email: string,
+  ) => {
     localStorage.setItem('token', token);
     localStorage.setItem('userRole', role);
     localStorage.setItem('userName', name);

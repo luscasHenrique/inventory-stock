@@ -1,20 +1,26 @@
-// src/types/models/user.ts
+export type UserRole = 'admin' | 'editor' | 'viewer' | 'seller' | 'superAdmin';
 
-import { Role } from '@/lib/auth';
-
-/**
- * Dados de usuário.
- */
 export interface User {
+  id: number;
+  username: string;
   name: string;
   email: string;
-  role: Role;
+  password: string;
+  phone?: string | null;
+  avatar_url?: string | null;
+  role: UserRole;
+  is_active: boolean;
+  last_login: string | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
-/**
- * Resposta de login, contendo o token e os dados do usuário.
- */
 export interface LoginResponse {
   token: string;
-  user: User;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    role: UserRole;
+  };
 }

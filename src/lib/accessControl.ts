@@ -1,8 +1,7 @@
-// src/lib/accessControl.ts
-import { Role } from './auth';
+import { UserRole } from '@/types/models/User';
 
 interface AccessControlConfig {
-  [path: string]: Role[];
+  [path: string]: UserRole[];
 }
 
 export const accessControl: AccessControlConfig = {
@@ -11,8 +10,8 @@ export const accessControl: AccessControlConfig = {
   '/income/earnings': ['admin'],
 };
 
-export function hasAccess(pathname: string, userRole: Role): boolean {
+export function hasAccess(pathname: string, userRole: UserRole): boolean {
   const allowedRoles = accessControl[pathname];
-  if (!allowedRoles) return true; // Se não tiver regra, todos têm acesso
+  if (!allowedRoles) return true;
   return allowedRoles.includes(userRole);
 }

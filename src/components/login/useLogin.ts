@@ -1,4 +1,3 @@
-// src/components/login/useLogin.ts
 'use client';
 
 import { useState } from 'react';
@@ -35,12 +34,10 @@ export function useLogin() {
     }
 
     try {
-      // ✅ Ajustado aqui: agora passando um objeto como esperado!
       const response = await fakeLoginRequest({ email, password });
 
       toast.success(`Bem-vindo(a), ${response.user.name}!`);
 
-      // ✅ Aqui, já envia nome, e-mail e role para o contexto:
       login(
         response.token,
         response.user.role,
@@ -48,7 +45,7 @@ export function useLogin() {
         response.user.email,
       );
 
-      router.push('/'); // Redireciona após login
+      router.push('/');
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Erro ao realizar login.';
