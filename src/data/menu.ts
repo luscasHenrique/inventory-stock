@@ -9,6 +9,7 @@ import {
   HelpCircle,
   LogOut,
   ChartAreaIcon,
+  LockKeyhole,
 } from 'lucide-react';
 
 export const mainMenu = [
@@ -49,6 +50,11 @@ export const mainMenu = [
       { label: 'Declines', href: '/income/declines' },
       { label: 'Payouts', href: '/income/payouts' },
     ],
+  },
+  {
+    icon: LockKeyhole,
+    label: 'Admin',
+    submenu: [{ label: 'Register User', href: '/register' }],
   },
 ];
 
