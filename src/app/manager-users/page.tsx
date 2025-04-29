@@ -55,29 +55,29 @@ export default function ManageUsersPage() {
     const newPassword = passwordInputs[userId];
     if (!newPassword) return;
     handlePasswordReset(userId, newPassword);
-    setPasswordInputs((prev) => ({ ...prev, [userId]: '' })); // limpa input depois de salvar
+    setPasswordInputs((prev) => ({ ...prev, [userId]: '' }));
   };
 
   return (
-    <div className="p-6 space-y-8">
-      <h1 className="text-3xl font-bold text-center text-primary mb-4">
+    <div className="p-4 space-y-8">
+      <h1 className="text-3xl font-bold text-center text-primary">
         Gerenciar Usuários
       </h1>
 
       {/* Formulário de Criação */}
-      <Card className="max-w-4xl mx-auto">
+      <Card className="max-w-5xl mx-auto">
         <CardHeader>
           <CardTitle>Criar Novo Usuário</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col md:flex-row gap-4 items-center">
+          <div className="flex flex-wrap gap-4">
             <Input
               placeholder="Usuário"
               value={newUser.username}
               onChange={(e) =>
                 setNewUser({ ...newUser, username: e.target.value })
               }
-              className="w-full md:w-1/3"
+              className="flex-1 min-w-[200px]"
             />
             <Input
               placeholder="Senha"
@@ -86,7 +86,7 @@ export default function ManageUsersPage() {
               onChange={(e) =>
                 setNewUser({ ...newUser, password: e.target.value })
               }
-              className="w-full md:w-1/3"
+              className="flex-1 min-w-[200px]"
             />
             <Select
               value={newUser.role}
@@ -94,7 +94,7 @@ export default function ManageUsersPage() {
                 setNewUser({ ...newUser, role: value as UserRole })
               }
             >
-              <SelectTrigger className="w-full md:w-1/3">
+              <SelectTrigger className="flex-1 min-w-[200px]">
                 <SelectValue placeholder="Cargo" />
               </SelectTrigger>
               <SelectContent>
@@ -105,25 +105,21 @@ export default function ManageUsersPage() {
                 ))}
               </SelectContent>
             </Select>
-            <Button
-              onClick={handleCreate}
-              variant="default"
-              className="w-full md:w-auto"
-            >
+            <Button onClick={handleCreate} className="w-full sm:w-auto">
               Criar
             </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Tabela de Usuários */}
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Lista de Usuários</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <Table>
+      {/* Versão desktop com tabela */}
+      <div className="hidden md:block">
+        <Card>
+          <CardHeader>
+            <CardTitle>Lista de Usuários</CardTitle>
+          </CardHeader>
+          <CardContent className="overflow-x-auto">
+            <Table className="min-w-[900px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>ID</TableHead>
@@ -139,8 +135,6 @@ export default function ManageUsersPage() {
                   <TableRow key={user.id}>
                     <TableCell>{user.id}</TableCell>
                     <TableCell>{user.username}</TableCell>
-
-                    {/* Cargo */}
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Select
@@ -170,8 +164,6 @@ export default function ManageUsersPage() {
                         </Button>
                       </div>
                     </TableCell>
-
-                    {/* Nova senha */}
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Input
@@ -193,42 +185,111 @@ export default function ManageUsersPage() {
                         </Button>
                       </div>
                     </TableCell>
-
-                    {/* Data de criação */}
                     <TableCell>
                       {user.created_at?.slice(0, 19).replace('T', ' ')}
                     </TableCell>
-
-                    {/* Ações */}
                     <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          onClick={() => handleDelete(user.id)}
-                          variant="destructive"
-                          size="icon"
-                          title="Excluir"
-                        >
-                          <Trash2 size={16} />
-                        </Button>
-                      </div>
+                      <Button
+                        onClick={() => handleDelete(user.id)}
+                        variant="destructive"
+                        size="icon"
+                        title="Excluir"
+                      >
+                        <Trash2 size={16} />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
-                {users.length === 0 && (
-                  <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      className="text-center text-gray-500"
-                    >
-                      Nenhum usuário encontrado.
-                    </TableCell>
-                  </TableRow>
-                )}
               </TableBody>
             </Table>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Versão mobile em cards */}
+      <div className="md:hidden space-y-4">
+        {users.map((user) => (
+          <Card key={user.id}>
+            <CardHeader>
+              <CardTitle className="text-base">
+                Usuário: <strong>{user.username}</strong>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <p className="text-sm">ID: {user.id}</p>
+
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground">Cargo:</label>
+                <div className="flex items-center gap-2">
+                  <Select
+                    value={user.role}
+                    onValueChange={(value) =>
+                      handleRoleChange(user.id, value as UserRole)
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roles.map((r) => (
+                        <SelectItem key={r.value} value={r.value}>
+                          {r.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    onClick={() => handleUpdateRole(user.id)}
+                    variant="outline"
+                    size="icon"
+                  >
+                    <CheckCircle size={16} />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground">
+                  Nova Senha:
+                </label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="password"
+                    placeholder="Nova senha"
+                    value={passwordInputs[user.id] || ''}
+                    onChange={(e) =>
+                      handlePasswordChange(user.id, e.target.value)
+                    }
+                  />
+                  <Button
+                    onClick={() => handlePasswordSave(user.id)}
+                    variant="outline"
+                    size="icon"
+                  >
+                    <KeyRound size={16} />
+                  </Button>
+                </div>
+              </div>
+
+              <p className="text-xs text-muted-foreground">
+                Criado em:{' '}
+                <span className="font-medium">
+                  {user.created_at?.slice(0, 19).replace('T', ' ')}
+                </span>
+              </p>
+
+              <Button
+                onClick={() => handleDelete(user.id)}
+                variant="destructive"
+                className="w-full"
+              >
+                <Trash2 size={16} className="mr-2" />
+                Excluir
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }
