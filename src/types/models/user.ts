@@ -1,7 +1,13 @@
 // src/types/models/user.ts
 
 // Tipos possíveis de papel (role) de um usuário
-export type UserRole = 'admin' | 'editor' | 'viewer' | 'seller' | 'superAdmin';
+export enum UserRole {
+  Admin = 'admin',
+  Editor = 'editor',
+  Viewer = 'viewer',
+  Seller = 'seller',
+  SuperAdmin = 'superAdmin',
+}
 
 // Interface principal de um usuário
 export interface User {
@@ -12,7 +18,7 @@ export interface User {
   password: string;
   phone?: string | null;
   avatar_url?: string | null;
-  role: UserRole;
+  role: UserRole; // agora usando o enum
   is_active: boolean;
   last_login: string | null;
   created_at: string | null;

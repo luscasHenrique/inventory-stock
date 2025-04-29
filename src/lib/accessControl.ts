@@ -1,3 +1,5 @@
+// src/lib/accessControl.ts
+
 import { UserRole } from '@/types/models/User';
 
 interface AccessControlConfig {
@@ -5,9 +7,9 @@ interface AccessControlConfig {
 }
 
 export const accessControl: AccessControlConfig = {
-  '/dashboard': ['admin'],
-  '/settings': ['admin'],
-  '/income/earnings': ['admin'],
+  '/dashboard': [UserRole.Admin],
+  '/settings': [UserRole.Admin],
+  '/income/earnings': [UserRole.Admin],
 };
 
 export function hasAccess(pathname: string, userRole: UserRole): boolean {

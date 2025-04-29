@@ -27,7 +27,7 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userRole, setUserRole] = useState<UserRole>('viewer');
+  const [userRole, setUserRole] = useState<UserRole>(UserRole.Viewer);
   const [userName, setUserName] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Erro ao buscar dados do usuário:', error);
       logoutService();
       setIsLoggedIn(false);
-      setUserRole('viewer');
+      setUserRole(UserRole.Viewer);
       setUserName(null);
       setUserEmail(null);
       router.push('/login');
@@ -104,7 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     logoutService();
     setIsLoggedIn(false);
-    setUserRole('viewer');
+    setUserRole(UserRole.Viewer);
     setUserName(null);
     setUserEmail(null);
     router.push('/login');

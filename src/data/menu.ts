@@ -54,7 +54,10 @@ export const mainMenu = [
   {
     icon: LockKeyhole,
     label: 'Admin',
-    submenu: [{ label: 'Register User', href: '/register' }],
+    submenu: [
+      { label: 'Register User', href: '/register' },
+      { label: 'Manger Users', href: '/manager-users' },
+    ],
   },
 ];
 

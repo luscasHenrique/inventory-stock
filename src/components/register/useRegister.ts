@@ -1,13 +1,13 @@
 'use client';
 
-import { Role } from '@/lib/auth';
+import { UserRole } from '@/types/models/User';
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 
 export function useRegister() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<Role>('viewer');
+  const [role, setRole] = useState<UserRole>('viewer');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
