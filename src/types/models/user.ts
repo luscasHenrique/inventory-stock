@@ -1,5 +1,9 @@
+// src/types/models/user.ts
+
+// Tipos possíveis de papel (role) de um usuário
 export type UserRole = 'admin' | 'editor' | 'viewer' | 'seller' | 'superAdmin';
 
+// Interface principal de um usuário
 export interface User {
   id: number;
   username: string;
@@ -15,12 +19,8 @@ export interface User {
   updated_at: string | null;
 }
 
+// Interface da resposta de login, contendo o token e os dados do usuário
 export interface LoginResponse {
   token: string;
-  user: {
-    id: number;
-    name: string;
-    email: string;
-    role: UserRole;
-  };
+  user: User;
 }
