@@ -7,7 +7,8 @@ import { mainMenu, footerMenu } from '@/data/menu';
 import { useHeader } from './useHeader';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { hasAccess } from '@/lib/accessControl';
+import { filterMenuByAccess } from '@/lib/filterMenuByAccess'; // ✅ import do helper
+import type { MenuItem } from '@/types/models/Menu';
 
 export function Header() {
   const { isOpen, toggleMenu, closeMenu } = useHeader();
@@ -18,6 +19,8 @@ export function Header() {
     logout();
     router.push('/login');
   };
+
+  const filteredMenu: MenuItem[] = filterMenuByAccess(mainMenu, userRole);
 
   return (
     <header className="w-full h-16 bg-white border-b flex items-center justify-between px-6 relative">
@@ -52,44 +55,32 @@ export function Header() {
           >
             <ul>
               {/* MAIN MENU */}
-              {mainMenu
-                .filter((item) => {
-                  if (item.href) return hasAccess(item.href, userRole);
-                  if (item.submenu) {
-                    return item.submenu.some((sub) =>
-                      hasAccess(sub.href, userRole),
-                    );
-                  }
-                  return true;
-                })
-                .map((item) =>
-                  item.submenu
-                    ? item.submenu
-                        .filter((subItem) => hasAccess(subItem.href, userRole))
-                        .map((subItem) => (
-                          <li key={subItem.href}>
-                            <Link
-                              href={subItem.href}
-                              className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100"
-                              onClick={closeMenu}
-                            >
-                              <span className="ml-3">{subItem.label}</span>
-                            </Link>
-                          </li>
-                        ))
-                    : item.href && ( // ⬅️ Adiciona essa verificação
-                        <li key={item.href}>
-                          <Link
-                            href={item.href}
-                            className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100"
-                            onClick={closeMenu}
-                          >
-                            <item.icon className="mr-3" size={18} />
-                            {item.label}
-                          </Link>
-                        </li>
-                      ),
-                )}
+              {filteredMenu.map((item) =>
+                item.submenu ? (
+                  item.submenu.map((subItem) => (
+                    <li key={subItem.href}>
+                      <Link
+                        href={subItem.href}
+                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100"
+                        onClick={closeMenu}
+                      >
+                        <span className="ml-3">{subItem.label}</span>
+                      </Link>
+                    </li>
+                  ))
+                ) : (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href!}
+                      className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100"
+                      onClick={closeMenu}
+                    >
+                      <item.icon className="mr-3" size={18} />
+                      {item.label}
+                    </Link>
+                  </li>
+                ),
+              )}
 
               {/* FOOTER MENU */}
               {footerMenu.map((item) => {
