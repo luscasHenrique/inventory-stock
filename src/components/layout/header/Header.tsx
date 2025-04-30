@@ -7,10 +7,11 @@ import { mainMenu, footerMenu } from '@/data/menu';
 import { useHeader } from './useHeader';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
+import { hasAccess } from '@/lib/accessControl';
 
 export function Header() {
   const { isOpen, toggleMenu, closeMenu } = useHeader();
-  const { logout, userName, userEmail } = useAuth();
+  const { logout, userName, userEmail, userRole } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
@@ -52,48 +53,74 @@ export function Header() {
           >
             <ul>
               {/* MAIN MENU */}
-              {mainMenu.map((item) =>
-                item.submenu ? (
-                  item.submenu.map((subItem) => (
-                    <li key={subItem.href}>
-                      <Link
-                        href={subItem.href}
-                        className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100"
-                        onClick={closeMenu}
-                      >
-                        <span className="ml-3">{subItem.label}</span>
-                      </Link>
-                    </li>
-                  ))
+              {mainMenu
+                .filter((item) => {
+                  if (item.href) return hasAccess(item.href, userRole);
+                  if (item.submenu) {
+                    return item.submenu.some((sub) =>
+                      hasAccess(sub.href, userRole),
+                    );
+                  }
+                  return true;
+                })
+                .map((item) =>
+                  item.submenu
+                    ? item.submenu
+                        .filter((subItem) => hasAccess(subItem.href, userRole))
+                        .map((subItem) => (
+                          <li key={subItem.href}>
+                            <Link
+                              href={subItem.href}
+                              className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100"
+                              onClick={closeMenu}
+                            >
+                              <span className="ml-3">{subItem.label}</span>
+                            </Link>
+                          </li>
+                        ))
+                    : item.href && ( // ⬅️ Adiciona essa verificação
+                        <li key={item.href}>
+                          <Link
+                            href={item.href}
+                            className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100"
+                            onClick={closeMenu}
+                          >
+                            <item.icon className="mr-3" size={18} />
+                            {item.label}
+                          </Link>
+                        </li>
+                      ),
+                )}
+
+              {/* FOOTER MENU */}
+              {footerMenu.map((item) => {
+                const isLogout = item.label.toLowerCase() === 'logout';
+                return isLogout ? (
+                  <li key={item.href}>
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        closeMenu();
+                      }}
+                      className={`flex items-center w-full px-4 py-3 text-sm ${item.color}`}
+                    >
+                      <item.icon className="mr-3" size={18} />
+                      {item.label}
+                    </button>
+                  </li>
                 ) : (
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100"
+                      className={`flex items-center w-full px-4 py-3 text-sm ${item.color}`}
                       onClick={closeMenu}
                     >
                       <item.icon className="mr-3" size={18} />
                       {item.label}
                     </Link>
                   </li>
-                ),
-              )}
-
-              {/* FOOTER MENU */}
-              {footerMenu.map((item) => (
-                <li key={item.href}>
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      closeMenu();
-                    }}
-                    className={`flex items-center w-full px-4 py-3 text-sm ${item.color}`}
-                  >
-                    <item.icon className="mr-3" size={18} />
-                    {item.label}
-                  </button>
-                </li>
-              ))}
+                );
+              })}
             </ul>
           </motion.nav>
         )}

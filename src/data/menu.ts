@@ -1,4 +1,5 @@
 // src/data/menu.ts
+import { MenuItem } from '@/types/models/Menu';
 import {
   Home,
   Users,
@@ -12,7 +13,7 @@ import {
   LockKeyhole,
 } from 'lucide-react';
 
-export const mainMenu = [
+export const mainMenu: MenuItem[] = [
   {
     icon: Home,
     label: 'Home',
