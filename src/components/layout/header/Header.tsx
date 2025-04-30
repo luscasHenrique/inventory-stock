@@ -11,7 +11,7 @@ import { hasAccess } from '@/lib/accessControl';
 
 export function Header() {
   const { isOpen, toggleMenu, closeMenu } = useHeader();
-  const { logout, userName, userEmail, userRole } = useAuth();
+  const { logout, userName, userRole } = useAuth();
   const router = useRouter();
 
   const handleLogout = () => {
@@ -39,7 +39,6 @@ export function Header() {
       <div className="hidden md:flex items-center gap-4">
         <span className="text-sm text-gray-600">Bem-vindo(a)!</span>
         <p className="text-sm font-semibold">{userName || 'Usuário'}</p>
-        <p className="text-xs text-gray-500">{userEmail || 'Sem e-mail'}</p>
       </div>
 
       {/* DROPDOWN MOBILE MENU */}
