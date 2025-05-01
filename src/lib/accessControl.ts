@@ -7,10 +7,12 @@ interface AccessControlConfig {
 }
 
 export const accessControl: AccessControlConfig = {
-  //   '/dashboard': [UserRole.Admin],
-  //   '/settings': [UserRole.Admin],
-  //   '/income/earnings': [UserRole.Admin],
-  //   '/income/declines': [UserRole.Admin],
+  '/dashboard': [UserRole.Admin],
+  '/settings': [UserRole.Admin],
+  '/register': [UserRole.Admin],
+  '/manager-users': [UserRole.Admin],
+  '/income/earnings': [UserRole.Admin],
+  '/income/declines': [UserRole.Admin],
 };
 
 export function hasAccess(pathname: string, userRole: UserRole): boolean {
