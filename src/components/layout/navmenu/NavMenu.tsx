@@ -110,7 +110,12 @@ export function NavMenu() {
                       { 'bg-gray-100 font-semibold': isActive },
                     )}
                   >
-                    <Icon size={18} className="shrink-0" />
+                    <Icon
+                      className={clsx('size-[18px] shrink-0', {
+                        'mx-auto': isCollapsed,
+                        'mr-3': !isCollapsed,
+                      })}
+                    />
                     {!isCollapsed && (
                       <span className="ml-3 flex-1 text-left">{label}</span>
                     )}
@@ -132,7 +137,12 @@ export function NavMenu() {
                       { 'bg-gray-100 font-semibold': isActive },
                     )}
                   >
-                    <Icon size={18} className="shrink-0" />
+                    <Icon
+                      className={clsx('size-[18px] shrink-0', {
+                        'mx-auto': isCollapsed,
+                        'mr-3': !isCollapsed,
+                      })}
+                    />
                     {!isCollapsed && (
                       <span className="ml-3 flex-1 text-left">{label}</span>
                     )}

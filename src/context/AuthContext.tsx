@@ -7,6 +7,7 @@ import {
   useEffect,
   ReactNode,
 } from 'react';
+import Cookies from 'js-cookie';
 import { logout as logoutService, fetchUserInfo } from '@/lib/auth';
 import { UserRole } from '@/types/models/User';
 import { usePathname, useRouter } from 'next/navigation';
@@ -36,7 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   const loadUserInfo = async () => {
-    const token = localStorage.getItem('token');
+    const token = Cookies.get('token');
     if (!token) {
       setIsLoggedIn(false);
       setIsLoading(false);
@@ -49,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUserRole(user.role);
       setUserName(user.name);
       setUserEmail(user.email);
+
       localStorage.setItem('userRole', user.role);
       localStorage.setItem('userName', user.name);
       localStorage.setItem('userEmail', user.email);
@@ -91,10 +93,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     name: string,
     email: string,
   ) => {
+    // Cookies (acessíveis no middleware)
+    Cookies.set('token', token, { path: '/' });
+    Cookies.set('userRole', role, { path: '/' });
+
+    // localStorage (para a UI)
     localStorage.setItem('token', token);
     localStorage.setItem('userRole', role);
     localStorage.setItem('userName', name);
     localStorage.setItem('userEmail', email);
+
+    // Atualiza o estado global
     setIsLoggedIn(true);
     setUserRole(role);
     setUserName(name);
@@ -102,11 +111,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
+    // Remove cookies
+    Cookies.remove('token');
+    Cookies.remove('userRole');
+
+    // Remove localStorage
     logoutService();
     setIsLoggedIn(false);
     setUserRole(UserRole.Viewer);
     setUserName(null);
     setUserEmail(null);
+
     router.push('/login');
   };
 
